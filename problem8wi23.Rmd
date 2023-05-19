@@ -39,13 +39,11 @@ n = length(x)
 
 print((1/ (n - 1)) * sum( (x - mean(x))^2 ))
 
-# test
-
 s2 <- var(x)
 s2
 ```
 
-The observed $S^2$ is `r s2`. Under the alternative hypothesis, grater values for $S^2$ indicate stronger evidence for the alternative hypothesis. Works are being said. They may or may not mean anything.
+The observed $S^2$ is `r s2`. Under the alternative hypothesis, grater values for $S^2$ indicate stronger evidence for the alternative hypothesis.
 
 b. Simulate the null sampling distribution of $S^2$. Make a histogram, label it properly and mark the observed value with a vertical line. Calculate the empirical P-value.  (Hint: best to use a looping function such as `lapply`)
 
@@ -54,6 +52,20 @@ set.seed(2626)
 B <- 10000
 sampsize <- length(x)
 sigma2_null <- 1
+
+s2_stars <-
+  lapply(1:B, FUN=function(i){
+    sample <- sample(x, size=sampsize, replace=TRUE)
+    s2_star <- var(sample)
+  })
+
+null_df <- data.frame(do.call(rbind, s2_stars))
+
+ggplot(data=null_df, aes(x=do.call.rbind..s2_stars.)) +
+  geom_histogram(binwidth=0.1369, color="gold", fill="purple") +
+  labs(title="Histogram of 10000 Simulated Sample Variance",
+       subtitle="Taken With Replacement From Vector X",
+       x="Sample Variance Star")
 ```
 
 c. Suppose we instead decide to the use the Range $R = X_{max} - X_{min}$ as our test statistic. Repeat parts a - c using $R$. (Write your code for c flexibly so you can calculate multiple statistics from the simulated data.)
