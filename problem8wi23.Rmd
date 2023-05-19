@@ -33,6 +33,14 @@ $$S^2 = \frac{1}{n-1} \sum\limits_{i=1}^{n} (X_i - \bar{X})^2.$$
 
 a. Calculate the observed value for $S^2$. What direction is predicted for our statistic under $H_1$?
 
+```{r 1a}
+n = length(x)
+
+(1/ (n - 1)) * sum( (x - mean(x))^2 )
+
+var(x)
+```
+
 b. Simulate the null sampling distribution of $S^2$. Make a histogram, label it properly and mark the observed value with a vertical line. Calculate the empirical P-value.  (Hint: best to use a looping function such as `lapply`)
 
 ```{r label="gen-null-dist"}
