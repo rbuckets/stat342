@@ -1,0 +1,97 @@
+---
+title: "Problem Section 8"
+subtitle:  "EmpiricalP-value"
+graphics: yes
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(fastR2)
+```
+
+* * * 
+### Instructions
+
+Please answer the following questions in the order in which they are posed. Add a few empty lines below each and write your answers there. Focus on answering in complete sentences. You will also need scratch paper/pen to work out the answers before typing it.
+
+For help with formatting documents in RMarkdown, please consult [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/). Another option is to search using Google. 
+
+* * *
+
+### Exercises 
+
+1. Suppose the following sample - denoted by $X_1,X_2,\dots,X_n$ - are drawn from a $Norm(0, \sigma^2_0)$ distribution:
+```{r}
+x<- c(-0.58319935, -1.36090219,  0.38663763, -1.54365592,  0.87083945, -0.69187830, 0.45898841, -2.82556635,  0.01777137, -0.62753863 , 0.54611381, -1.39731591, -1.72584231,  0.91371529,  0.18096064, -0.53063107, -0.76604739, -1.97107704, 0.56394712,  1.13707563)
+```
+
+Suppose we want to test $H_0: \sigma^2_0 = 1$ versus $\sigma^2_0 > 1$ using the sample variance:
+$$S^2 = \frac{1}{n-1} \sum\limits_{i=1}^{n} (X_i - \bar{X})^2.$$
+
+a. Calculate the observed value for $S^2$. What direction is predicted for our statistic under $H_1$?
+
+b. Simulate the null sampling distribution of $S^2$. Make a histogram, label it properly and mark the observed value with a vertical line. Calculate the empirical P-value.  (Hint: best to use a looping function such as `lapply`)
+
+```{r label="gen-null-dist"}
+set.seed(2626)
+B <- 10000
+sampsize <- length(x)
+sigma2_null <- 1
+```
+
+c. Suppose we instead decide to the use the Range $R = X_{max} - X_{min}$ as our test statistic. Repeat parts a - c using $R$. (Write your code for c flexibly so you can calculate multiple statistics from the simulated data.)
+
+d. Suppose we decide to use a level $\alpha=0.05$ test. What values of $S^2$ will you reject $H_0$ for? Same question for $R$. (Hint: find the 0.95 quantile of the null sampling distribution of each statistic. Think about why.) 
+
+e. For the level $\alpha = 0.05$ test, compare the Type II error probabilities for $S^2$ and $R$ when $\sigma^2_0 = 3$. Remember, the Type II error rate is the probability that we fail to reject $H_0$ when $H_1$ is true. How do they do?   (You will need to simulate data under the alternative to calculate the Type II error rate)
+
+```{r label="sim-alt-dist"}
+set.seed(151)
+sigma2_alt <- sqrt(3)
+
+```
+f. Think of a different statistic - call it $T$ - that will be sensitive to large values of $\sigma_0$. Repeat a - e using $T$. 
+ 
+
+
+
+```{r eval = F}
+#for Harshil: 
+B <- 10000 
+set.seed(1515)
+
+null_sim_df <- lapply(X=1:B, FUN=function(X){
+                           sampdata = rnorm(n=20,sd=1)
+                           data.frame(s2 = var(sampdata), 
+                                      r = diff(range(sampdata)))
+})
+
+null_sim_stats <- do.call(rbind, null_sim_df)
+
+#find the 95th percentile of the null sampling distribution
+critical_values <- null_sim_stats %>% 
+                    summarise(s2crit = quantile(s2, 0.95),
+                              rcrit = quantile(r,0.95))
+
+sim_df_alt <- lapply(X=1:B, FUN=function(X){
+                           sampdata = rnorm(n=20,sd=2)
+                           data.frame(s2 = var(sampdata), 
+                                      r = diff(range(sampdata)))
+})
+
+sim_stats_alt <- do.call(rbind, sim_df_alt)
+
+sim_stats_alt %>% summarise( mean(s2 < critical_values$s2crit),
+                             mean(r < critical_values$rcrit))
+
+
+hist(sim_stats_alt$s2)
+
+```
+```{r}
+set.seed(1414)
+var(rexp(n=25, rate=2))
+```
+
