@@ -43,7 +43,7 @@ s2 <- var(x)
 s2
 ```
 
-The observed $S^2$ is `r s2`. Under the alternative hypothesis, grater values for $S^2$ indicate stronger evidence for the alternative hypothesis.
+The observed $S^2$ is `r s2`. Under the alternative hypothesis, grater values for $S^2$ indicate stronger evidence for the alternative hypothesis. Works are being said. They may or may not mean anything.
 
 b. Simulate the null sampling distribution of $S^2$. Make a histogram, label it properly and mark the observed value with a vertical line. Calculate the empirical P-value.  (Hint: best to use a looping function such as `lapply`)
 
