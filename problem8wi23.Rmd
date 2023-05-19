@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(fastR2)
 #Does this thing even work??
+# Im saying random words
 ```
 
 * * * 
@@ -36,10 +37,13 @@ a. Calculate the observed value for $S^2$. What direction is predicted for our s
 ```{r 1a}
 n = length(x)
 
-(1/ (n - 1)) * sum( (x - mean(x))^2 )
+print((1/ (n - 1)) * sum( (x - mean(x))^2 ))
 
-var(x)
+s2 <- var(x)
+s2
 ```
+
+The observed $S^2$ is `r s2`. Under the alternative hypothesis, grater values for $S^2$ indicate stronger evidence for the alternative hypothesis.
 
 b. Simulate the null sampling distribution of $S^2$. Make a histogram, label it properly and mark the observed value with a vertical line. Calculate the empirical P-value.  (Hint: best to use a looping function such as `lapply`)
 
