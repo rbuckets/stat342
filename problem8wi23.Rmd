@@ -39,6 +39,8 @@ n = length(x)
 
 print((1/ (n - 1)) * sum( (x - mean(x))^2 ))
 
+# test
+
 s2 <- var(x)
 s2
 ```
