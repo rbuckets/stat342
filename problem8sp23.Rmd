@@ -10,7 +10,7 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+library(LearnBayes)
 ```
 
 
@@ -24,6 +24,12 @@ Maya Cardiya, Ph.D. plans to test $n=500$ patients to determine if they carry S.
 
 a. Find the beta prior. (Use `beta.select` from `LearnBayes` to find the shape parameters)
 
+```{r}
+q1 <- list(p=0.5, x=0.01)
+q2 <- list(p=0.99, x=0.05)
+params <- beta.select(q1, q2)
+params
+```
 The prior distribution is a $Beta(1.38, 105.62)$.
 
 b. Dr. Cardiya's protocol calls for one interim analysis near 50\% of testing. Of the first 241 subjects, 7 tested positive for S. heftans. 
