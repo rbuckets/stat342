@@ -1,0 +1,30 @@
+---
+title: "Descriptive, Interesting Title"
+author: "Trevor Riordan, Ray Wang"
+date: "2023-05-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Abstract
+
+# Introduction
+
+# Keywords
+
+# Introduction
+
+# Statistical Methods
+
+# Results
+
+# Conclusion
+
+# References
+
+# Appendix
+
+
