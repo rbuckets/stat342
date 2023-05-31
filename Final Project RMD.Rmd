@@ -18,6 +18,28 @@ knitr::opts_chunk$set(echo = TRUE)
 # Introduction
 
 # Statistical Methods
+```{r bootstrapping}
+set.seed(1130)
+x_pop <- c(rep(1, 8), rep(0, 17411))
+y_pop <- c(rep(1, 162), rep(0, 17511))
+
+pi_hat_x <- 8 / (8 + 17411)
+pi_hat_y <- 162 / (162 + 17511)
+
+psi_hat_initial <- (pi_hat_y - pi_hat_x)/pi_hat_y
+
+B <- 10000
+
+psi_stars <- lapply(1:B, FUN = function(i){
+  samp_x <- sample(x_pop, length(x_pop), replace=T)
+  samp_y <- sample(y_pop, length(y_pop), replace=T)
+  xbar_star <- mean(samp_x)
+  ybar_star <- mean(samp_y)
+  psi_star <- (ybar_star - xbar_star) / ybar_star
+})
+
+psi_star_df <- data.frame(do.call(rbind, psi_stars))
+```
 
 # Results
 
