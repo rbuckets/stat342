@@ -58,6 +58,7 @@ c(lower_efficacy, upper_efficacy)
 
 empirical_pval <- nrow(psi_star_df$psi_star < 0.3) / B
 empirical_pval
+
 ```
 
 # Results
