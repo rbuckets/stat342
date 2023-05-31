@@ -7,6 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
 # Abstract
@@ -26,7 +27,7 @@ y_pop <- c(rep(1, 162), rep(0, 17511))
 pi_hat_x <- 8 / (8 + 17411)
 pi_hat_y <- 162 / (162 + 17511)
 
-psi_hat_initial <- (pi_hat_y - pi_hat_x)/pi_hat_y
+efficacy_initial <- (pi_hat_y - pi_hat_x)/pi_hat_y
 
 B <- 10000
 
@@ -36,9 +37,27 @@ psi_stars <- lapply(1:B, FUN = function(i){
   xbar_star <- mean(samp_x)
   ybar_star <- mean(samp_y)
   psi_star <- (ybar_star - xbar_star) / ybar_star
+  data.frame(psi_star)
 })
 
 psi_star_df <- data.frame(do.call(rbind, psi_stars))
+
+ggplot(data=psi_star_df, mapping=aes(x=psi_star)) + 
+  geom_histogram(binwidth = 0.004) +
+  labs(title="Histogram of 10000 Bootstrapped Efficacy Values",
+       x="Efficacy",
+       y="Count"
+       )
+efficacy_se <- sd(psi_star_df$psi_star)
+efficacy_se
+
+upper_efficacy <- efficacy_initial + 1.96 * efficacy_se
+lower_efficacy <- efficacy_initial - 1.96 * efficacy_se
+c(lower_efficacy, upper_efficacy)
+
+
+empirical_pval <- nrow(psi_star_df$psi_star < 0.3) / B
+empirical_pval
 ```
 
 # Results
