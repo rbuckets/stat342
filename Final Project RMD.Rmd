@@ -3,6 +3,7 @@ title: "Descriptive, Interesting Title"
 author: "Trevor Riordan, Ray Wang"
 date: "2023-05-26"
 output: pdf_document
+header-includes: \usepackage{setspace}\doublespacing
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +20,16 @@ library(tidyverse)
 # Introduction
 
 # Statistical Methods
-```{r bootstrapping}
+
+## Nonparametric Bootstrapping
+
+This section details the method of nonparametric bootstrapping to generate two forms of confidence intervals providing insight into the true efficacy rate of the vaccine. From Table 2 of the referenced paper we are given two groups of patients: those given the vaccine and those given placebo. From those given the vaccine we can measure the number who got COVID and call this value x and from those given the placebo we can measure the same thing, calling this value y. Then, because there are a fixed number of patients per group who either contract COVID (which is considered the "success" here) or not, and under the assumption that every patient has equal probability of contracting COVID and that the result of one patient does not impact any others, we can model X, the number of COVID cases from the vaccine group, and Y, the number of COVID cases from the placebo group, as binomial distributions. From the table we can see there are $8+17411 = 17419$ patients given the vaccine and $162 + 17511 = 17673$ given the placebo. Thus, $X \sim Binom(17419, \pi_1)$ and $Y \sim Binom(17673, \pi_2)$ where $\pi_1$ is the probability of any given patient with the vaccine contracting COVID and $\pi_2$ is the probability of contracting COVID given the placebo. We can then measure efficacy, $\psi$, as the reduction in probability of contracting COVID given the vaccine compared to the placebo by $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$. We know the expected value of a binomial distribution with $n$ trials and $\pi_0$ probability of success is $n \pi_0$. Using method of moments to equate the sample mean, $\bar{x}$, to the expected value, we get that an estimate for $\pi_0$ is $\hat{\pi_0}^{mom} = \frac{\bar{x}}{n}$. Treating the given data as the population data, we can sample data of the same size as the original samples with replacement from the observed $X$ and the observed $Y$ samples, each 10,000 times. From each of these 10,000 bootstrapped samples from $X$ and $Y$, we can calculate an estimate for both $\pi_1$ and $\pi_2$ and thus create 10,000 sampled $\hat{\psi} = \frac{\hat{\pi_2} - \hat{\pi_1}}{\hat{\pi_2}}$, accurately representing the distribution of $\hat{\psi}$. From these 10,000 samples we can calculate the standard error of $\hat{\psi}$. Since we have a large number of observations (10,000), we know the distribution of $\hat{\psi}$ is approximately normal, so we can create a 95% confidence interval by adding or subtracting the standard error multiplied by 1.96 to or from our observed efficacy value to generate a range of values we are 95% confident contains the true efficacy of the vaccine. Additionally, we can create a 95% confidence interval ranging from the 2.5th to the 97.5th quantile of our 10,000 sampled $\hat{\psi}$ creating an interval we are 95% confident contains the true efficacy of the vaccine. 
+
+## Maximum Likelihood and Hypothesis Testing
+This section details the use of the maximum likelihood estimator for $\psi$ giving the most probable $\psi$ under our observed data. Additionally, we will perform hypothesis testing determining the probability of observing data at least as extreme as our data under the null hypothesis, indicating how likely it is the null hypothesis is true. For both maximum likelihood estimation and hypothesis testing, we aggregate our observed data into a single binomial distribution. Let T be the number of patients in the vaccine group out of all patients who contracted COVID, then, $T \sim Binom(S=170, \pi_0)$ where $S=162 + 8 = 170$ is the total number of patients who contracted COVID from our data and $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ represents the probability of being in the vaccine group given the patient contracted COVID (this is the proportion of having the vaccine and COVID out of all those who contracted COVID, regardless of group). Note from before that $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$, plugging in $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ we get $\psi = \frac{1- 2\pi_0}{1-\pi_0}$ and thus $\pi_0 = \frac{1 - \psi}{1 - 2 \psi}$. So, $T \sim Binom(170, \pi_0 = \frac{1 - \psi}{1 - 2 \psi})$.
+
+
+```{r bootstrapping, cache=TRUE, echo=FALSE}
 set.seed(1130)
 x_pop <- c(rep(1, 8), rep(0, 17411))
 y_pop <- c(rep(1, 162), rep(0, 17511))
@@ -55,9 +65,9 @@ upper_efficacy <- efficacy_initial + 1.96 * efficacy_se
 lower_efficacy <- efficacy_initial - 1.96 * efficacy_se
 c(lower_efficacy, upper_efficacy)
 
-
-empirical_pval <- nrow(psi_star_df$psi_star < 0.3) / B
-empirical_pval
+upper_efficacy_quantile <- quantile(psi_star_df$psi_star, probs=0.975)
+lower_efficacy_quantile <- quantile(psi_star_df$psi_star, probs=0.025)
+c(lower_efficacy_quantile, upper_efficacy_quantile)
 
 ```
 
