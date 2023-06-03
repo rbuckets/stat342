@@ -19,30 +19,169 @@ library(tidyverse)
 
 # Introduction
 
-# Statistical Methods
+# Statistical Methods and Calculations
+
+## Data Overview
+Our analysis is based on the following table from the referenced paper detailing the efficacy of the COVID vaccine:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc} \hline
+Group & Cases & No. of Subjects \\ \hline
+BNT162b2 & 8 & 17411 \\ \hline
+Placebo & 162 & 17511 \\ \hline
+Total & 170 & 34922 \\ \hline
+\end{tabular}
+\end{table}
+
+The data shows that 17,411 patients were given the vaccine while 17,511 were given a placebo for a total of 34,922 patients. Of the patients given the vaccine, 8 contracted COVID. Of the patients given the placebo, 162 contracted COVID. There were a total of 170 COVID cases. From the table we can see that both groups have a low rate of contracting COVID ( < 1% each). Additionally, of the 170 COVID cases, less than 5% (8) came from the vaccinated group.
 
 ## Nonparametric Bootstrapping
 
-This section details the method of nonparametric bootstrapping to generate two forms of confidence intervals providing insight into the true efficacy rate of the vaccine. From Table 2 of the referenced paper we are given two groups of patients: those given the vaccine and those given placebo. From those given the vaccine we can measure the number who got COVID and call this value x and from those given the placebo we can measure the same thing, calling this value y. Then, because there are a fixed number of patients per group who either contract COVID (which is considered the "success" here) or not, and under the assumption that every patient has equal probability of contracting COVID and that the result of one patient does not impact any others, we can model X, the number of COVID cases from the vaccine group, and Y, the number of COVID cases from the placebo group, as binomial distributions. From the table we can see there are $8+17411 = 17419$ patients given the vaccine and $162 + 17511 = 17673$ given the placebo. Thus, $X \sim Binom(17419, \pi_1)$ and $Y \sim Binom(17673, \pi_2)$ where $\pi_1$ is the probability of any given patient with the vaccine contracting COVID and $\pi_2$ is the probability of contracting COVID given the placebo. We can then measure efficacy, $\psi$, as the reduction in probability of contracting COVID given the vaccine compared to the placebo by $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$. We know the expected value of a binomial distribution with $n$ trials and $\pi_0$ probability of success is $n \pi_0$. Using method of moments to equate the sample mean, $\bar{x}$, to the expected value, we get that an estimate for $\pi_0$ is $\hat{\pi_0}^{mom} = \frac{\bar{x}}{n}$. Treating the given data as the population data, we can sample data of the same size as the original samples with replacement from the observed $X$ and the observed $Y$ samples, each 10,000 times. From each of these 10,000 bootstrapped samples from $X$ and $Y$, we can calculate an estimate for both $\pi_1$ and $\pi_2$ and thus create 10,000 sampled $\hat{\psi} = \frac{\hat{\pi_2} - \hat{\pi_1}}{\hat{\pi_2}}$, accurately representing the distribution of $\hat{\psi}$. From these 10,000 samples we can calculate the standard error of $\hat{\psi}$. Since we have a large number of observations (10,000), we know the distribution of $\hat{\psi}$ is approximately normal, so we can create a 95% confidence interval by adding or subtracting the standard error multiplied by 1.96 to or from our observed efficacy value to generate a range of values we are 95% confident contains the true efficacy of the vaccine. Additionally, we can create a 95% confidence interval ranging from the 2.5th to the 97.5th quantile of our 10,000 sampled $\hat{\psi}$ which we are 95% confident contains the true efficacy of the vaccine. 
+This section details the method of nonparametric bootstrapping to generate two forms of confidence intervals providing insight into the true efficacy rate of the vaccine. From Table 2 of the referenced paper we are given two groups of patients: those given the vaccine and those given placebo. From those given the vaccine we can measure the number who got COVID and call this value x and from those given the placebo we can measure the same thing, calling this value y. Then, because there are a fixed number of patients per group who either contract COVID (which is considered the "success" here) or not, and under the assumption that every patient has equal probability of contracting COVID and that the result of one patient does not impact any others, we can model X, the number of COVID cases from the vaccine group, and Y, the number of COVID cases from the placebo group, as binomial distributions. From the table we can see there are 17411 patients given the vaccine and 17511 given the placebo. Thus, $X \sim Binom(17411, \pi_1)$ and $Y \sim Binom(17511, \pi_2)$ where $\pi_1$ is the probability of any given patient with the vaccine contracting COVID and $\pi_2$ is the probability of contracting COVID given the placebo. We can then measure efficacy, $\psi$, as the reduction in probability of contracting COVID given the vaccine compared to the placebo by $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$. We know the expected value for a random variable $Z$ from a binomial distribution with $n$ trials and $\pi_0$ probability of success is $n \pi_0$. Using method of moments to equate the sample mean, $\bar{z}$, to the expected value, we get that an estimate for $\pi_0$ is $\hat{\pi_0}^{mom} = \frac{\bar{z}}{n}$. Using this method, we can generate an estimate for $\psi$ from our given data. Using our data as a single sample from the population, we can see $\bar{x} = 8$ and $\bar{y} = 162$, thus $\hat{\pi_1} = \frac{8}{17411}$ and $\hat{\pi_2} = \frac{162}{17511}$, indicating the rate of COVID contraction is low for both populations. Thus, the initial estimate for $\psi$, $\hat{\psi} = 0.950334$. Treating the given data as the population data, we can sample data of the same size as the original samples with replacement from the observed $X$ and the observed $Y$ samples (as binary vectors of respective lengths with respective proportions of 1s and 0s), each 10,000 times. From each of these 10,000 bootstrapped samples from $X$ and $Y$, we can calculate an estimate for both $\pi_1$ and $\pi_2$ and thus create 10,000 sampled $\hat{\psi} = \frac{\hat{\pi_2} - \hat{\pi_1}}{\hat{\pi_2}}$. From these 10,000 samples we can calculate the standard error of $\hat{\psi}$. Since we have a large number of observations (10,000), we know the distribution of $\hat{\psi}$ is approximately normal, so we can create a 95% Wald's confidence interval by adding or subtracting the standard error multiplied by 1.96 to or from our observed efficacy value, $\hat{\psi} = 0.950334$, to generate a range of values we are 95% confident contains the true efficacy of the vaccine. Additionally, we can create a 95% confidence interval ranging from the 2.5th to the 97.5th quantile of our 10,000 sampled $\hat{\psi}$ which we are 95% confident contains the true efficacy of the vaccine.
 
 ## Maximum Likelihood Estimator and Hypothesis Testing
 
-This section details the use of the maximum likelihood estimator for $\psi$ giving the most probable $\psi$ under our observed data. Additionally, we will perform hypothesis testing determining the probability of observing data at least as extreme as our data under the null hypothesis, indicating how likely it is the null hypothesis is true. For both maximum likelihood estimation and hypothesis testing, we aggregate our observed data into a single binomial distribution. Let T be the number of patients in the vaccine group out of all patients who contracted COVID, then, $T \sim Binom(S=170, \pi_0)$ where $S=162 + 8 = 170$ is the total number of patients who contracted COVID from our data and $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ represents the probability of being in the vaccine group given the patient contracted COVID (this is the proportion of having the vaccine and COVID out of all those who contracted COVID, regardless of group). This distribution works since we have a fixed number of trials (170 COVID cases) that are either in the vaccine group (success) or not, and we can assume that each patient has equal chance of being in the vaccine group given they have COVID while the outcome of having the vaccine or not is independent of the other patients. Note from before that $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$, substituting $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ we get $\psi = \frac{1- 2\pi_0}{1-\pi_0}$ and thus $\pi_0 = \frac{1 - \psi}{1 - 2 \psi}$. So, $T \sim Binom(170, \pi_0 = \frac{1 - \psi}{1 - 2 \psi})$.  Because $T \sim Binom(170, \pi_0 = \frac{1 - \psi}{1 - 2 \psi})$ and we have only observation for $t = \text{Number of Patients Given Vaccine Out of All COVID Cases}$, substituting $\pi_0 = \frac{1 - \psi}{1 - 2 \psi}$ into $f(t) = \binom{170}{t} * \pi_0^t * (1-\pi_0)^{170-t}$ yields the likelihood function $L(\psi) = \binom{170}{t} * (\frac{1 - \psi}{1 - 2 \psi})^x * (1 - (\frac{1 - \psi}{1 - 2 \psi}))^{170 - t}$. Thus, the log-likelihood function $\ell(\psi) = \ln(\binom{170}{t}) + t * \ln(\frac{1 - \psi}{1 - 2 \psi}) + (170 - t) \ln(1-(\frac{1 - \psi}{1 - 2 \psi}))$. Next, we will take the derivative of the log-likelihood function and set it equal to 0 to solve for the maximum likelihood estimator for $\psi$. Note that $\frac{d}{d\psi} (\frac{1 - \psi}{1 - 2 \psi}) = \frac{-1}{(\psi - 2)^2}$ by the quotient rule, so $\frac{d}{d\psi} (1 - \frac{1 - \psi}{1 - 2 \psi}) = \frac{1}{(\psi - 2)^2}$. Also, $\frac{1}{1 - \frac{(1-\psi)}{2-\psi}} = \frac{1}{\frac{2 - \psi + \psi - 1}{2-\psi}} = \frac{2-\psi}{1}$ 
-Now, 
+This section details the use of the maximum likelihood estimator for $\psi$ generating the most probable $\psi$ given our observed data. Additionally, we will perform hypothesis testing in the form of a likelihood ratio test evaluating the how extreme our data is under the null, indicating how unlikely the null hypothesis may be. For maximum likelihood estimation, we aggregate our observed data into a single binomial distribution where we measure the number of COVID cases in the vaccine group once we reached a total number of COVID cases across both groups (170 in our case). Let T be the number of patients in the vaccine group out of all patients who contracted COVID, then, $T \sim Binom(S=170, \pi_0)$ where $S=162 + 8 = 170$ is the total number of patients who contracted COVID from our data and $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ represents the probability of being in the vaccine group given the patient contracted COVID (this is the probability of having the vaccine and COVID divided by the total probability of contracting COVID, regardless of group). We can prove that $T$ follows this distribution with the use of Bayes rule seen in Equation 1 of the Appendix. From $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ we can solve for $\pi_2$ and substitute for $\pi_2$ to get an expression for $\psi$ in terms of $\pi_0$ and $\pi_0$ in terms of $\psi$:
+
 \begin{align*}
-\frac{d}{d\psi} (\ell(\psi)) &= 0 + t * \frac{2 - \psi}{1-\psi} * \frac{d}{d\psi} (\frac{1 - \psi}{1 - 2 \psi})  + (170 - t) \frac{1}{1 - \frac{(1-\psi)}{2-\psi}} * \frac{d}{d\psi} (1 - \frac{1 - \psi}{1 - 2 \psi})  \\
-&= \frac{-t(2-\psi)}{(1-\psi)(2-\psi)^2} + \frac{(170 -t)(2-\psi)}{(\psi-2)^2} \\
-&= \frac{-t}{(1-\psi)(2-\psi)} + \frac{(t - 170)}{(2-\psi)}
+\pi_0 &= \frac{\pi_1}{\pi_1 + \pi_2} \\
+\pi_0(\pi_1 + \pi_2) &= \pi_1 \\
+\pi_0 \pi_2 &= \pi_1 (1 - \pi_0) \\
+\pi_2 &= \frac{\pi_1(1 - \pi_0)}{\pi_0} \\
+& \text{ so, } \\
+\psi &= \frac{\pi_2 - \pi_1}{\pi_2} \\
+&= \frac{\frac{\pi_1(1 - \pi_0)}{\pi_0} - \pi_1}{\frac{\pi_1(1 - \pi_0)}{\pi_0}} \\
+&= \frac{\pi_0 * (\frac{\pi_1(1 - \pi_0)}{\pi_0} - \pi_1)}{\pi_1 * (1-\pi_0)} \\
+&= \frac{\pi_1 (1-\pi_0) - \pi_0 \pi_1}{\pi_1 (1-\pi_0)} \\
+&= \frac{\pi_1 (1-\pi_0 - \pi_0)}{1-\pi_0} \\
+&= \frac{1 - 2\pi_0}{1-\pi_0} \\
+& \text{ even further,} \\
+\psi ( 1- \pi_0) &= 1 - 2\pi_0 \\
+\pi_0 (\psi - 2) &= \psi - 1 \\
+\pi_0 &= \frac{\psi - 1}{\psi - 2}
 \end{align*}
 
+Thus, $\psi = \frac{1- 2\pi_0}{1-\pi_0}$ and $\pi_0 = \frac{\psi - 1}{\psi - 2}$. Hence, $T \sim Binom(170, \pi_0 = \frac{\psi - 1}{\psi - 2})$.  Because $T \sim Binom(170, \pi_0 = \frac{\psi - 1}{\psi - 2})$ and we have only observation for $t = 8 = \text{Number of Patients Given Vaccine Out of All COVID Cases}$, substituting $\pi_0 = \frac{\psi - 1}{\psi - 2}$ and $t=8$ into $f(t) = \binom{170}{t} * \pi_0^t * (1-\pi_0)^{170-t}$ yields the likelihood function $L(\psi) = \binom{170}{8} * (\frac{\psi - 1}{\psi - 2})^8 * (1 - \frac{\psi - 1}{\psi - 2}))^{170 - 8}$. Thus, the log-likelihood function $\ell(\psi) = \ln(\binom{170}{8}) + 8 * \ln(\frac{\psi - 1}{\psi - 2}) + 162 \ln(1-(\frac{\psi - 1}{\psi - 2}))$. Taking the derivative of the log-likelihood function with respect to $\psi$ and setting it equal to 0 to solve for the maximum likelihood estimator for $\psi$ yields $\hat{\psi}^{mle} = \frac{77}{81}$, as seen in Equation 2 of the Appendix.
 
-```{r bootstrapping, cache=TRUE, echo=FALSE}
+To verify this is the maximum and to calculate the standard error of $\hat{\psi}^{mle}$, we need to take the second derivative of $\ell(\psi)$ with respect to $\psi$, and plug in our $\hat{\psi}^{mle}$. As seen in Equation 3 of the Appendix, $\ell '' (\psi) = \frac{16\psi -24}{(\psi^2 -3\psi + 2)^2} + \frac{162}{\psi-2)^2}$. Plugging in our estimate of $\hat{\psi}^{mle} = \frac{77}{81}$ into $\ell''(\psi)$ yields $\ell''(\hat{\psi}^{mle}) = -3126.126$. Since this value is negative, $\hat{\psi}^{mle} = \frac{77}{81}$ is a global maximum. Additionally, $SE(\hat{\psi}^{mle}) = \sqrt{\frac{-1}{\ell '' (\hat{\psi}^{mle})}} = 0.01788532$. From our initial estimate and given standard error, we can create a 95% Wald's confidence interval for $\psi$ ranging from $\hat{\psi}^{mle} - 1.96 * SE(\hat{\psi}^{mle})$ to $\hat{\psi}^{mle} + 1.96 * SE(\hat{\psi}^{mle})$. Thus, our 95% confidence interval for $\psi$ is $(0.9155621, 0.9856725)$.
+
+Next, we will perform hypothesis testing using the likelihood ratio test using $H_0: \psi = 0.3$ and $H_a: \psi \neq 0.3$ at the 5% level of significance. We will calculate the likelihood ratio statistic, $W = 2 [\ell(\hat{\psi}^{mle}) - \ell(\psi^{null})]$. From this observed $W$ statistic, we can calculate the probability of observing data as or more extreme than our observed data since $W \sim \chi_1^2$. We know from previous that $\ell(\psi) = \ln(\binom{170}{8}) + 8 * \ln(\frac{\psi - 1}{\psi - 2}) + 162 \ln(1-(\frac{\psi - 1}{\psi - 2}))$. Plugging in our observed value for $t=8$ along with our respective values for $\hat{\psi}^{mle} = \frac{77}{81}$ and $\psi^{null} = 0.3$ allows us to calculate our observed $W = 2 (-1.944994 + 62.7456) = 121.6012$. Then, to calculate the probability of observing data as or more extreme than our observed W, we look at the probability of observing a value greater than or equal to our observed $W$ since larger values are more evidence for the alternative hypothesis. Then, we will calculate the p-value as 'pchisq(W, df=1, lower.tail=FALSE)`, generating a p-value of $2.822313 * 10^{-28}$. 
+
+# Results
+
+## Bootstrapping Results
+The distribution of $\hat{\psi}$ from the 10,000 samples is displayed below. 
+
+```{r bootstrap, cache=TRUE, echo=FALSE}
 set.seed(1130)
-x_pop <- c(rep(1, 8), rep(0, 17411))
-y_pop <- c(rep(1, 162), rep(0, 17511))
+x_pop <- c(rep(1, 8), rep(0, 17403))
+y_pop <- c(rep(1, 162), rep(0, 17349))
 
-pi_hat_x <- 8 / (8 + 17411)
-pi_hat_y <- 162 / (162 + 17511)
+pi_hat_x <- 8 / (17411)
+pi_hat_y <- 162 / (17511)
+
+efficacy_initial <- (pi_hat_y - pi_hat_x)/pi_hat_y
+
+B <- 10000
+
+psi_stars <- lapply(1:B, FUN = function(i){
+  samp_x <- sample(x_pop, length(x_pop), replace=T)
+  samp_y <- sample(y_pop, length(y_pop), replace=T)
+  xbar_star <- mean(samp_x)
+  ybar_star <- mean(samp_y)
+  psi_star <- (ybar_star - xbar_star) / ybar_star
+  data.frame(psi_star)
+})
+
+psi_star_df <- data.frame(do.call(rbind, psi_stars))
+
+ggplot(data=psi_star_df, mapping=aes(x=psi_star)) + 
+  geom_histogram(binwidth = 0.004) +
+  labs(title="Histogram of 10000 Bootstrapped Efficacy Values",
+       x="Efficacy",
+       y="Count"
+       )
+efficacy_se <- sd(psi_star_df$psi_star)
+
+
+upper_efficacy <- efficacy_initial + 1.96 * efficacy_se
+lower_efficacy <- efficacy_initial - 1.96 * efficacy_se
+
+upper_efficacy_quantile <- quantile(psi_star_df$psi_star, probs=0.975)
+lower_efficacy_quantile <- quantile(psi_star_df$psi_star, probs=0.025)
+
+```
+
+Recall from the Bootstrapping Section of Statistical Methods, $\hat{\psi} = 0.950334$. The 10,000 sampled $\hat{\psi}$ generated a standard error (sample standard deviation) of `r efficacy_se`. Thus, the lower bound of the 95% Wald's confidence interval is `r lower_efficacy`, and the upper bound is `r upper_efficacy`. The 2.5th quantile of the bootstrapped data is `r lower_efficacy_quantile` and the 97.5th quantile is `r upper_efficacy_quantile`.
+
+## Maximum Likelihood Estimation and Hypothesis Testing Results
+From before, we can see that $\hat{\psi}^{mle} = \frac{77}{81} = 0.950617$. Additionally, $SE(\hat{\psi}^{mle}) = 0.01788532$. From this, we can calculate the 95% Wald's confidence interval for $\psi$, which has a lower bound of $0.915562$ and an upper bound of $0.985673$. Finally, from our hypothesis test with $H_0: \psi = 0.3$ and $H_a: \psi \neq 0.3$, we observe a W statistic of 121.6012. The probability of observing a value as or more extreme than our observed W is $2.822313 * 10^{-28}$.
+
+## Comparing Intervals
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc} \hline
+Interval & Lower Bound & Upper Bound \\ \hline
+Bootstrapped Wald's & 0.914996 & 0.985671 \\ \hline
+Bootstrapped Quantile & 0.911057 & 0.981714 \\ \hline
+MLE Wald's & 0.915562 & 0.985673 \\ \hline
+\end{tabular}
+\end{table}
+
+# Conclusion
+
+# References
+
+# Appendix
+
+## Equation 1: Proof of Distribution of T
+
+First, note that since both $X$ and $Y$ have a very large number of trials with a low probability of contracting COVID, we can say that $X \approx Pois(17411 * \pi_1)$ is independent of $Y \approx Pois(17511, * \pi_2)$.
+
+\begin{align*}
+P(T=t) &= P(X=x|X+Y=170) \text{ Probability of $x$ people in vaccine group with COVID given 170 total COVID cases} \\
+&= \frac{P(X = t \cap X+Y = 170)}{P(X+Y = 170)} \text{by definition of conditional probability} \\
+&= \frac{P(X = t \cap Y = 170-t)}{P(X+Y=170)} \\
+&= \frac{P(X = t) * P(Y = 170-t)}{P(X+Y=170)} \text{since $X$ is independent of $Y$} \\
+&= \binom{170}{t} \pi^t (1-\pi)^{170-t} \text{where $\pi = \frac{n_1\pi_1}{n_1\pi_1 + n_2\pi_2}$}
+\end{align*} 
+Since $n_1 = 17411 \approx 17511 = n_2$, we can substitute $n_2$ for $n_1$ and see that $\pi = \frac{n_1\pi_1}{n_1\pi_1 + n_2\pi_2} \approx \frac{n_1\pi_1}{n_1\pi_1 + n_1\pi_2} = \frac{n_1\pi_1}{n_1(\pi_1 + \pi_2)} = \frac{\pi_1}{\pi_1 + \pi_2}$.
+
+## Equation 2: Derivation of Log Likelihood and Calculations for Maximum Likelihood Estimator for Psi
+
+First, note that $\frac{d}{d\psi} (\frac{\psi - 1}{\psi - 2}) = \frac{-1}{(\psi - 2)^2}$ by the quotient rule, so $\frac{d}{d\psi} (1 - \frac{\psi - 1}{\psi - 2}) = \frac{1}{(\psi - 2)^2}$. Also, $\frac{1}{1 - \frac{(\psi-1)}{\psi-2}} = \frac{1}{\frac{\psi -2 - \psi + 1}{\psi-2}} = -(\psi-2)$. Now,
+
+\begin{align*}
+\frac{d}{d\psi} (\ell(\psi)) &= 0 + 8 * \frac{\psi - 2}{\psi - 1} * \frac{d}{d\psi} (\frac{\psi - 1}{\psi - 2})  + 162 * \frac{1}{1 - \frac{\psi-1}{\psi-2}} * \frac{d}{d\psi} (1 - \frac{\psi-1}{\psi-2})  \\
+&= \frac{-8(\psi-2)}{(\psi-1)(\psi-2)^2} - \frac{162(\psi-2)}{(\psi-2)^2} \\
+&= \frac{-8}{(\psi-1)(\psi-2)} - \frac{162}{\psi-2} = 0 \\
+& \text{ and } \\
+\frac{-8}{(\psi-1)(\psi-2)} - \frac{162(\psi-1)}{(\psi -1)(\psi-2)} &= 0 \\
+-8 - 162(\psi-1) &= 0 \\
+-8 -162 \psi + 162 &= 0 \\
+-162 \psi &= -154 \\
+\psi &= \frac{-154}{-162} = \frac{77}{81}
+\end{align*}
+
+## Equation 3: Second Derivative of Log Likelihood
+
+\begin{align*}
+\frac{d^2}{d^2\psi} \ell(\psi) = \frac{d}{d\psi} \ell ' (\psi) &= \frac{d}{d\psi} (\frac{-8}{(\psi-1)(\psi-2)} - \frac{162}{\psi-2}) \\
+&= \frac{d}{d\psi} (-8(\psi^2 -3\psi + 2)^{-1} - 162(\psi-2)^{-1}) \\
+&= \frac{8}{(\psi^2 -3\psi + 2)^2} * \frac{d}{d\psi} (\psi^2 -3\psi + 2) + \frac{162}{\psi-2)^2} * \frac{d}{d\psi} (\psi - 2) \\
+&= \frac{8 * (2\psi -3)}{(\psi^2 -3\psi + 2)^2} + \frac{162}{\psi-2)^2}
+\end{align*}
+
+## Code Chunk 1: Bootstrapping
+```{r bootstrapping, eval=FALSE}
+set.seed(1130)
+x_pop <- c(rep(1, 8), rep(0, 17403))
+y_pop <- c(rep(1, 162), rep(0, 17349))
+
+pi_hat_x <- 8 / (17411)
+pi_hat_y <- 162 / (17511)
 
 efficacy_initial <- (pi_hat_y - pi_hat_x)/pi_hat_y
 
@@ -77,13 +216,3 @@ lower_efficacy_quantile <- quantile(psi_star_df$psi_star, probs=0.025)
 c(lower_efficacy_quantile, upper_efficacy_quantile)
 
 ```
-
-# Results
-
-# Conclusion
-
-# References
-
-# Appendix
-
-
