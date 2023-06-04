@@ -13,12 +13,12 @@ library(tidyverse)
 
 # Abstract
 
-# Introduction
-
 # Keywords
 
 # Introduction
-
+  COVID-19 emerged at the end of 2019 as a global threat to humanity. Hospitals were overwhelmed, economies shut down, and hundreds of thousands died from the virus in just the first few months of the pandemic. In 2020, COVID was the third leading cause of death in the United States with over 350,000 confirmed deaths due to COVID (https://www.cdc.gov/nchs/products/databriefs/db427.htm). The need for prevention tactics was obvious and utterly necessary to save lives and help slow down the extreme social and economic damage done by the virus. Very quickly, large biotechnology companies like Pfizer and BioNTech intended to test their vaccine candidates with the intent to prove vaccine efficacy is not 30%, since the FDA requires at least a  30% efficacy in new treatments, and obtain approval for an emergency use authorization. So, BioNTech and Pfizer performed a multinational, placebo-controlled, observer-blinded, pivotal efficacy trial randomly assigning those age 16 or older to either a vaccine or placebo group in a 1:1 ratio. Those in the vaccine group were given two doses of the mRNA vaccine 21 days apart and those in the placebo were given two doses of saline solution 21 days apart. Efficacy was primarily measured as the efficacy in preventing COVID rather than dealing with already confirmed, severe COVID cases. Thus, the data is measured on those who received both doses of either the placebo or mRNA vaccine without major protocol deviations (such that the population could not be evaluated, for example in those with HIV) who had no previous indication of infection within 7 days after the second dose. All acceptable candidates are expected to report and be tested for COVID infection at any time 7 days after the second dose of the vaccine. From this, efficacy can be estimated by comparing the rate of infection between the vaccine and placebo groups. 
+  Pfizer and BioNTech's team estimated efficacy to be 95% with a 95% Bayesian credible interval ranging from 90.3 to 97.6. From the same results used in the team's Bayesian analysis, we will perform a diverse set of statistical methods to compare the scientist's efficacy claims with our own findings using confidence intervals and hypothesis testing. We will perform similar Bayesian analysis using the same prior distribution to verify the claims made by the scientists as well as explore different prior distributions to determine how the team's original choice of an informative prior compares to an uninformative prior or other informative priors. We are curious in determining how the choice of prior affects the probability of the null hypothesis being true as well the 95% confidence interval for vaccine efficacy. In addition to similar Bayesian analysis, we will perform nonparametric bootstrapping to generate multiple confidence intervals for vaccine efficacy, and we will compare these intervals with the intervals provided by the team of scientists. Finally, we will perform frequentist analysis to generate a maximum likelihood estimate and a confidence interval for efficacy.  Additionally, we will perform hypothesis testing using the likelihood ratio test to determine the probability of the null being true given our data. All of our hypothesis testing is based on the efficacy statistic where the null states the efficacy is 30%, and for Bayesian analysis the alternative hypothesis states efficacy is greater than 30%, while for the likelihood ratio test the alternative hypothesis states true efficacy is not equal to 30%. So, we will use a multitude of statistical methods comparing and contrasting our methods' estimates and intervals with the claimed estimates and intervals as well as verify the claims made about the null hypothesis's truth.
+  
 # Statistical Methods and Calculations
 
 ## Data Overview
@@ -122,7 +122,7 @@ From before, we can see that $\hat{\psi}^{mle} = \frac{77}{81} = 0.950617$. Addi
 
 \begin{table}[h]
 \centering
-\begin{tabular}{ccc} \hline
+\begin{tabular}{cccc} \hline
 Interval & Lower Bound & Upper Bound \\ \hline
 Bootstrapped Wald's & 0.914996 & 0.985671 \\ \hline
 Bootstrapped Quantile & 0.911057 & 0.981714 \\ \hline
@@ -132,7 +132,10 @@ MLE Wald's & 0.915562 & 0.985673 \\ \hline
 
 # Conclusion
 
+The results of the Pfizer analysis agreed with our analysis. All methods employed estimated efficacy to be about 95%, which is also what Pfizer's estimated efficacy is as well. Additionally, all confidence intervals lined up with Pfizer's analysis, generating ranges from around 0.91 to 0.98. Since none of the confidence intervals contain 0.3, for each and every method used we reject the null hypothesis and conclude that the true efficacy is not 0.3. In addition to confidence intervals, we performed the likelihood ratio test which generated a p-value of $2.822313 * 10^{-28}$. Since this p-value is less than the specified 0.05 significance level, we conclude there is sufficient evidence against and reject the null hypothesis. Nonparametric bootstrapping is an effective tactic to model population data from a sample and generate two types of confidence intervals. However, nonparametric bootstrapping is at the mercy of the data. Inherent differences in the groups given the vaccine versus the placebo can lead to skewed data supporting a false conclusion. More analysis will need to be done on the subgroups within the data ensuring the groups are equal in participation from specific subgroups like race, obesity, age, and health status. The maximum likelihood estimation method generates a consistent estimator, giving us a reliable estimate and confidence interval for efficacy. Additionally, we can use the likelihood ratio test to determine how unusual our data is under the null hypothesis. However, the distribution for $T$, based on the distributions of $X$ and $Y$, are reliant on a few assumptions, including that every patient's COVID outcome is independent of all others and that the probability of contracting COVID is equivalent for each patient in the vaccine group and equal for each patient in the control group. However, since background factors may impact the probability of getting COVID, this is likely an untrue assumption. Nonetheless, all methods used generated an estimated efficacy of 95% with confidence intervals roughly ranging from 91% to 98%. Since each method independently rejected the null hypothesis, we agree with Pfizer and conclude that the true efficacy is not 30% but estimated to be 95%. So, the vaccine is a very effective treatment to prevent COVID-19.
+
 # References
+CDC COVID stats: https://www.cdc.gov/nchs/products/databriefs/db427.htm
 
 # Appendix
 
