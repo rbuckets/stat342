@@ -15,7 +15,7 @@ library(LearnBayes)
 # Abstract
 
 ### Background
-Pfizer and BioNTech performed a large study in 2020 to verify their mRNA vaccine exceeds 30% efficacy in COVID prevention. We will verify the claims in this study by comparing the results of multiple statistical techniques.
+Pfizer and BioNTech performed a large study in 2020 to verify their mRNA vaccine exceeds 30% efficacy in COVID prevention. We will verify the claims in this study by comparing the results of multiple statistical techniques. 
 
 ### Methods
 We will use three statistical methods to independently generate an estimate and 95% confidence interval for vaccine efficacy. First, we will employ Bayesian methods analyzing the posterior distribution from the prior used in the report and three additional priors ranging from completely uninformative to increasingly pessimistic. Second, we will use maximum likelihood estimation. Finally, we will use nonparametric bootstrapping. 
