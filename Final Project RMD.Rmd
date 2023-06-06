@@ -17,7 +17,7 @@ library(LearnBayes)
 # Keywords
 
 # Introduction
-  COVID-19 emerged at the end of 2019 as a global threat to humanity. Hospitals were overwhelmed, economies shut down, and hundreds of thousands died from the virus in just the first few months of the pandemic. In 2020, COVID was the third leading cause of death in the United States with over 350,000 confirmed deaths due to COVID.\footnote{https://www.cdc.gov/nchs/products/databriefs/db427.html} The need for prevention tactics was obvious and utterly necessary to save lives and help slow down the extreme social and economic damage done by the virus. Very quickly, large biotechnology companies like Pfizer and BioNTech intended to test their vaccine candidates with the intent to prove vaccine efficacy is not 30%, since the FDA requires at least a  30% efficacy in new treatments, and obtain approval for an emergency use authorization. So, BioNTech and Pfizer performed a multinational, placebo-controlled, observer-blinded, pivotal efficacy trial randomly assigning those age 16 or older to either a vaccine or placebo group in a 1:1 ratio. Those in the vaccine group were given two doses of the mRNA vaccine 21 days apart and those in the placebo were given two doses of saline solution 21 days apart. Efficacy was primarily measured as the efficacy in preventing COVID rather than dealing with already confirmed, severe COVID cases. Thus, the data is measured on those who received both doses of either the placebo or mRNA vaccine without major protocol deviations (such that the population could not be evaluated, for example in those with HIV) who had no previous indication of infection within 7 days after the second dose. All acceptable candidates are expected to report and be tested for COVID infection at any time 7 days after the second dose of the vaccine. From this, efficacy can be estimated by comparing the rate of infection between the vaccine and placebo groups.\footnote{https://www.nejm.org/doi/full/10.1056/nejmoa2034577}
+  COVID-19 emerged at the end of 2019 as a global threat to humanity. Hospitals were overwhelmed, economies shut down, and hundreds of thousands died from the virus in just the first few months of the pandemic. In 2020, COVID was the third leading cause of death in the United States with over 350,000 confirmed deaths due to COVID.\footnote{https://www.cdc.gov/nchs/products/databriefs/db427.htm} The need for prevention tactics was obvious and utterly necessary to save lives and help slow down the extreme social and economic damage done by the virus. Very quickly, large biotechnology companies like Pfizer and BioNTech intended to test their vaccine candidates with the intent to prove vaccine efficacy is not 30%, since the FDA requires at least a  30% efficacy in new treatments, and obtain approval for an emergency use authorization. So, BioNTech and Pfizer performed a multinational, placebo-controlled, observer-blinded, pivotal efficacy trial randomly assigning those age 16 or older to either a vaccine or placebo group in a 1:1 ratio. Those in the vaccine group were given two doses of the mRNA vaccine 21 days apart and those in the placebo were given two doses of saline solution 21 days apart. Efficacy was primarily measured as the efficacy in preventing COVID rather than dealing with already confirmed, severe COVID cases. Thus, the data is measured on those who received both doses of either the placebo or mRNA vaccine without major protocol deviations (such that the population could not be evaluated, for example in those with HIV) who had no previous indication of infection within 7 days after the second dose. All acceptable candidates are expected to report and be tested for COVID infection at any time 7 days after the second dose of the vaccine. From this, efficacy can be estimated by comparing the rate of infection between the vaccine and placebo groups.\footnote{https://www.nejm.org/doi/full/10.1056/nejmoa2034577}
   Pfizer and BioNTech's team estimated efficacy to be 95% with a 95% Bayesian credible interval ranging from 90.3 to 97.6. From the same results used in the team's Bayesian analysis, we will perform a diverse set of statistical methods to compare the scientist's efficacy claims with our own findings using confidence intervals and hypothesis testing. We will perform similar Bayesian analysis using the same prior distribution to verify the claims made by the scientists as well as explore different prior distributions to determine how the team's original choice of an informative prior compares to an uninformative prior or other informative priors. We are curious in determining how the choice of prior affects the probability of the null hypothesis being true as well the 95% confidence interval for vaccine efficacy. In addition to similar Bayesian analysis, we will perform nonparametric bootstrapping to generate multiple confidence intervals for vaccine efficacy, and we will compare these intervals with the intervals provided by the team of scientists. Finally, we will perform frequentist analysis to generate a maximum likelihood estimate and a confidence interval for efficacy.  Additionally, we will perform hypothesis testing using the likelihood ratio test to determine the probability of the null being true given our data. All of our hypothesis testing is based on the efficacy statistic where the null states the efficacy is 30%, and for Bayesian analysis the alternative hypothesis states efficacy is greater than 30%, while for the likelihood ratio test the alternative hypothesis states true efficacy is not equal to 30%. So, we will use a multitude of statistical methods comparing and contrasting our methods' estimates and intervals with the claimed estimates and intervals as well as verify the claims made about the null hypothesis's truth. 
   
 # Statistical Methods and Calculations
@@ -39,30 +39,11 @@ The data shows that 17,411 patients were given the vaccine while 17,511 were giv
 
 ## Distribution Setup
 
-From Table 2 of the referenced paper we are given two groups of patients: those given the vaccine and those given placebo. From those given the vaccine we can measure the number who got COVID and call this value x and from those given the placebo we can measure the same thing, calling this value y. Then, because there are a fixed number of patients per group who either contract COVID (which is considered the "success" here) or not, and under the assumption that every patient has equal probability of contracting COVID and that the result of one patient does not impact any others, we can model X, the number of COVID cases from the vaccine group, and Y, the number of COVID cases from the placebo group, as binomial distributions. From the table we can see there are 17411 patients given the vaccine and 17511 given the placebo. Thus, $X \sim Binom(17411, \pi_1)$ and $Y \sim Binom(17511, \pi_2)$ where $\pi_1$ is the probability of any given patient with the vaccine contracting COVID and $\pi_2$ is the probability of contracting COVID given the placebo. We can then measure efficacy, $\psi$, as the reduction in probability of contracting COVID given the vaccine compared to the placebo by $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$. 
+From Table 2 of the referenced paper we are given two groups of patients: those given the vaccine and those given placebo. From those given the vaccine we can measure the number who got COVID and call this value x and from those given the placebo we can measure the same thing, calling this value y. Then, because there are a fixed number of patients per group who either contract COVID (which is considered the "success" here) or not, and under the assumption that every patient has equal probability of contracting COVID and that the result of one patient does not impact any others, we can model X, the number of COVID cases from the vaccine group, and Y, the number of COVID cases from the placebo group, as binomial distributions. From the table we can see there are 17411 patients given the vaccine and 17511 given the placebo. Thus, $X \sim Binom(n_1=17411, \pi_1)$ and $Y \sim Binom(n_2=17511, \pi_2)$ where $\pi_1$ is the probability of any given patient with the vaccine contracting COVID and $\pi_2$ is the probability of contracting COVID given the placebo. We can then measure efficacy, $\psi$, as the reduction in probability of contracting COVID given the vaccine compared to the placebo by $\psi = \frac{\pi_2 - \pi_1}{\pi_2}$. 
 
-We can aggregate our observed data into a single binomial distribution where we measure the number of COVID cases in the vaccine group once we reached a total number of COVID cases across both groups (170 in our case). Let T be the number of patients in the vaccine group out of all patients who contracted COVID, then, $T \sim Binom(S=170, \pi_0)$ where $S=162 + 8 = 170$ is the total number of patients who contracted COVID from our data and $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ represents the probability of being in the vaccine group given the patient contracted COVID (this is the probability of having the vaccine and COVID divided by the total probability of contracting COVID, regardless of group). We can prove that $T$ follows this distribution with the use of Bayes rule seen in Equation 1 of the Appendix. From $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ we can solve for $\pi_2$ and substitute for $\pi_2$ to get an expression for $\psi$ in terms of $\pi_0$ and $\pi_0$ in terms of $\psi$:
+We can aggregate our observed data into a single binomial distribution where we measure the number of COVID cases in the vaccine group once we reached a total number of COVID cases across both groups (170 in our case). Let T be the number of patients in the vaccine group out of all patients who contracted COVID, then, $T \sim Binom(S=170, \pi_0)$ where $S=162 + 8 = 170$ is the total number of patients who contracted COVID from our data. Let $\pi_0$ represent the probability of being in the vaccine group given that the patient contracted COVID (this is the probability of having the vaccine and COVID divided by the total probability of contracting COVID, regardless of group). We prove that $\pi_0 = \frac{n_1 \pi_1}{n_1\pi_1 + n_2\pi_2}$ in Equation 1 in the Appendix. Because $n_1 \approx n_2$ we can assume they are equal and further simplify this to $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$. Thus, $T \sim Binom(S = 170, \pi_0 = \frac{\pi_1}{\pi_1 + \pi_2})$. We can prove that $T$ follows this distribution with the use of Bayes rule seen in Equation 2 of the Appendix. Subsequently, we can rewrite the expression of $\pi_0 = \frac{\pi_1}{\pi_1 + \pi_2}$ in terms of $\psi$, which comes out to be The work for this is shown in Equation 3 in the Appendix.
 
-\begin{align*}
-\pi_0 &= \frac{\pi_1}{\pi_1 + \pi_2} \\
-\pi_0(\pi_1 + \pi_2) &= \pi_1 \\
-\pi_0 \pi_2 &= \pi_1 (1 - \pi_0) \\
-\pi_2 &= \frac{\pi_1(1 - \pi_0)}{\pi_0} \\
-& \text{ so, } \\
-\psi &= \frac{\pi_2 - \pi_1}{\pi_2} \\
-&= \frac{\frac{\pi_1(1 - \pi_0)}{\pi_0} - \pi_1}{\frac{\pi_1(1 - \pi_0)}{\pi_0}} \\
-&= \frac{\pi_0 * (\frac{\pi_1(1 - \pi_0)}{\pi_0} - \pi_1)}{\pi_1 * (1-\pi_0)} \\
-&= \frac{\pi_1 (1-\pi_0) - \pi_0 \pi_1}{\pi_1 (1-\pi_0)} \\
-&= \frac{\pi_1 (1-\pi_0 - \pi_0)}{1-\pi_0} \\
-&= \frac{1 - 2\pi_0}{1-\pi_0} \\
-& \text{ even further,} \\
-\psi ( 1- \pi_0) &= 1 - 2\pi_0 \\
-\pi_0 (\psi - 2) &= \psi - 1 \\
-\pi_0 &= \frac{\psi - 1}{\psi - 2}
-\end{align*}
-
-Thus, $\psi = \frac{1- 2\pi_0}{1-\pi_0}$ and $\pi_0 = \frac{\psi - 1}{\psi - 2}$. Hence, $T \sim Binom(170, \pi_0 = \frac{\psi - 1}{\psi - 2})$. 
-
+Thus, $\psi = \frac{1- 2\pi_0}{1-\pi_0}$ and $\pi_0 = \frac{\psi - 1}{\psi - 2}$. Hence, $T \sim Binom(170, \pi_0 = \frac{\psi - 1}{\psi - 2})$.
 
 ## Bayesian 
 
@@ -84,7 +65,6 @@ The second prior distribution we will analyze is the same one used in the refere
 ### Prior 3: Pessimistic, Informative
 
 The next prior distribution we explored is a pessimistic unimodal, symmetric beta distribution centered about an efficacy value of 0 with the 95th percentile efficacy value of 0.3. This is a pessimistic, somewhat informative prior distribution suggesting that we initially expect the vaccine to have no effect whatsoever. To be centered about an efficacy of 0 this requires that $P(\psi > 0) = 0.5$, since $\psi = \frac{1 - 2\pi_0}{1-\pi_0}$, we can substitute $\psi$ for $\frac{1 - 2\pi_0}{1-\pi_0}$ and get the value $x$ such that $P(\pi_0 < x) = 0.5$. We can use a similar substitution into $P(\psi > 0.3) = 0.05$ to solve for the value $y$ such that $P(\pi_0 < y) = 0.95$. These calculations are detailed below: 
-<<<<<<< HEAD
 $$0.05 = P(\psi > 0) = P(\frac{1 - 2\pi_0}{1-\pi_0} > 0) = P(1 - 2\pi_0 > 0) = P(2\pi_0 < 1) = P(\pi_0 < 0.5)$$
 Similarly:
 $$0.05 = P(\psi > 0.3) = P(\frac{1 - 2\pi_0}{1-\pi_0} > 0.3) = P(1 - 2\pi_0 > 0.3 - 0.3\pi_0) = P(0.7 > 1.7 \pi_0) = P(\pi_0 < \frac{0.7}{1.7} = 0.4118)$$
@@ -119,7 +99,7 @@ Next, we will perform hypothesis testing using the likelihood ratio test using $
 
 First, we'll examine our uninformative prior $Beta(0, 1) = Unif(0, 1)$. The median of our posterior distribution is $0.946707$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9009794, 0.9750466)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.9422e-28$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. In the figure below, we plot the prior and posterior distributions:
 
-```{r Bayesian uniform figure, echo=FALSE}
+```{r Bayesian uniform figure, echo=FALSE, fig.width=5, fig.height=4}
 
 x <- seq(0, 1, length.out = 1000)
 
@@ -135,7 +115,7 @@ Note that because our prior distribution is extremely uninformative, our posteri
 
 Now we will examine the prior distribution used by the study, which was $Beta(0.700102, 1)$. The median of our posterior distribution is $0.9485501$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9035199, 0.9762552)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.9422e-28$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. Our prior distribution is also extremely uninformative, so we expect extreme values in our confidence interval and our p-value. In the figure below, we plot the prior and posterior distributions:
 
-```{r Bayesian study figure, echo=FALSE}
+```{r Bayesian study figure, echo=FALSE, fig.width=5, fig.height=4}
 
 x <- seq(0, 1, length.out = 1000)
 
@@ -151,7 +131,7 @@ Our graphs are very similar to the graphs for the uniform prior distribution. Th
 
 Next, we will examine the informative and pessimistic prior distribution $Beta(43.04, 43.04)$. The median of our posterior distribution given our informative and pessimistic prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.923758e-13$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. Because our prior distribution is more pessimistic, our confidence interval and p-value are not as extreme as the ones we obtained for our previous uninformative priors. In the figure below, we plot the prior and posterior distributions:
 
-```{r Bayesian med0 figure, echo=FALSE}
+```{r Bayesian med0 figure, echo=FALSE, fig.width=5, fig.height=4}
 
 x <- seq(0, 1, length.out = 1000)
 
@@ -165,26 +145,9 @@ legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd
 
 Note that because our prior distribution is more informative, our posterior distribution has more spread. Our posterior distribution is also centered on a higher value of $\pi$, which would be a lower value of $\psi$. This is in concordance with the confidence interval we calculated earlier, and it makes sense because our prior distribution is more pessimistic.
 
-
-```{r Bayesian med, echo=FALSE}
-# calculate posterior median
-posterior_median_pi <- qbeta(0.5, shape1 = 134.47 + 8, shape2 = 89.76 + 170 - 8)
-cat("posterior median:", efficacy(posterior_median_pi), "\n")
-
-# calculate 95% CI
-pi_ci_med0 <- qbeta(p = c(0.025, 0.975), shape1 = 134.47 + 8, shape2 = 89.76 + 170 - 8)
-low_med0 <- efficacy(pi_ci_med0[2])
-high_med0 <- efficacy(pi_ci_med0[1])
-
-
-cat("95% CI:", c(low_med0, high_med0))
-```
-
-
 Finally, we examine our most pessimistic model $Beta(134.47, 89.76)$, where we consider the possibility that $\psi$ can be negative. The median of our posterior distribution given this prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $0.01986187$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. This is the most striking result in our findings, as even when we consider a prior distribution with a mean of $\psi = -0.5$ and a $0.95$ quantile of $\psi = -0.2$, we still reject a null hypothesis of $\psi = 0.3$. Our analysis demonstrates just how the evidence in the study was. In the figure below, we plot the prior and posterior distributions:
 
-
-```{r Bayesian pessimistic figur, echo=FALSE}
+```{r Bayesian pessimistic figure, echo=FALSE, fig.width=5, fig.height=4}
 
 x <- seq(0, 1, length.out = 1000)
 
@@ -201,7 +164,7 @@ Our posterior distribution has more spread than our uniform and $Beta(0.700102, 
 ## Bootstrapping Results
 The distribution of $\hat{\psi}$ from the 10,000 samples is displayed below. 
 
-```{r bootstrap, cache=TRUE, echo=FALSE}
+```{r bootstrap, cache=TRUE, echo=FALSE, fig.width=5, fig.height=4}
 set.seed(1130)
 x_pop <- c(rep(1, 8), rep(0, 17403))
 y_pop <- c(rep(1, 162), rep(0, 17349))
@@ -267,7 +230,19 @@ CDC COVID stats: https://www.cdc.gov/nchs/products/databriefs/db427.htm
 
 # Appendix
 
-## Equation 1: Proof of Distribution of T
+## Equation 1: Proof of pi_0
+
+Recall that $\pi_0$ represents the probability that a participant is vaccinated given that they got COVID. We'll call the even that a participant gets vaccinated "vaccinated" and the probability that a participant gets COVID "COVID". If we pick a person at random from the entire study group with equal probability for each participant, we can assume that $P(\text{vaccinated}) = \frac{n_1}{n_1 + n_2}$, and $P(\text{not vaccinated}) = \frac{n_2}{n_1 + n_2}$. Now we're ready to solve for $\pi_0$:
+
+\begin{align*}
+\pi_0 &= P(\text{vaccinated} | \text{covid}) \\
+&= \frac{P(\text{covid} | \text{vaccinated})}{P(covid)} \\
+&= \frac{P(\text{covid} | \text{vaccianted})}{P(\text{covid} | \text{vaccianted})P(vaccinated) + P(\text{covid} | \text{placebo})P(placebo)} \\
+&= \frac{\pi_1 (\frac{n_1}{n_1 + n_2})}{\pi_1 (\frac{n_1}{n_1 + n_2}) + \pi_2 (\frac{n_2}{n_1 + n_2})} \\
+&= \frac{n_1\pi_1}{n_1\pi_1 + n_2\pi_2}
+\end{align*}
+
+## Equation 2: Proof of Distribution of T
 
 First, note that since both $X$ and $Y$ have a very large number of trials with a low probability of contracting COVID, we can say that $X \approx Pois(17411 * \pi_1)$ is independent of $Y \approx Pois(17511, * \pi_2)$. 
 
@@ -280,7 +255,27 @@ P(T=t) &= P(X=x|X+Y=170) \text{ Probability of $x$ people in vaccine group with 
 \end{align*} 
 Since $n_1 = 17411 \approx 17511 = n_2$, we can substitute $n_2$ for $n_1$ and see that $\pi = \frac{n_1\pi_1}{n_1\pi_1 + n_2\pi_2} \approx \frac{n_1\pi_1}{n_1\pi_1 + n_1\pi_2} = \frac{n_1\pi_1}{n_1(\pi_1 + \pi_2)} = \frac{\pi_1}{\pi_1 + \pi_2}$.
 
-## Equation 2: Derivation of Log Likelihood and Calculations for Maximum Likelihood Estimator for Psi
+## Equation 3: Rewriting Pi_0 in terms of Psi
+
+\begin{align*}
+\pi_0 &= \frac{\pi_1}{\pi_1 + \pi_2} \\
+\pi_0(\pi_1 + \pi_2) &= \pi_1 \\
+\pi_0 \pi_2 &= \pi_1 (1 - \pi_0) \\
+\pi_2 &= \frac{\pi_1(1 - \pi_0)}{\pi_0} \\
+& \text{ so, } \\
+\psi &= \frac{\pi_2 - \pi_1}{\pi_2} \\
+&= \frac{\frac{\pi_1(1 - \pi_0)}{\pi_0} - \pi_1}{\frac{\pi_1(1 - \pi_0)}{\pi_0}} \\
+&= \frac{\pi_0 * (\frac{\pi_1(1 - \pi_0)}{\pi_0} - \pi_1)}{\pi_1 * (1-\pi_0)} \\
+&= \frac{\pi_1 (1-\pi_0) - \pi_0 \pi_1}{\pi_1 (1-\pi_0)} \\
+&= \frac{\pi_1 (1-\pi_0 - \pi_0)}{1-\pi_0} \\
+&= \frac{1 - 2\pi_0}{1-\pi_0} \\
+& \text{ even further,} \\
+\psi ( 1- \pi_0) &= 1 - 2\pi_0 \\
+\pi_0 (\psi - 2) &= \psi - 1 \\
+\pi_0 &= \frac{\psi - 1}{\psi - 2}
+\end{align*}
+
+## Equation 4: Derivation of Log Likelihood and Calculations for Maximum Likelihood Estimator for Psi
 
 First, note that $\frac{d}{d\psi} (\frac{\psi - 1}{\psi - 2}) = \frac{-1}{(\psi - 2)^2}$ by the quotient rule, so $\frac{d}{d\psi} (1 - \frac{\psi - 1}{\psi - 2}) = \frac{1}{(\psi - 2)^2}$. Also, $\frac{1}{1 - \frac{(\psi-1)}{\psi-2}} = \frac{1}{\frac{\psi -2 - \psi + 1}{\psi-2}} = -(\psi-2)$. Now,
 
