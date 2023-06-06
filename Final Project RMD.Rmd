@@ -14,7 +14,20 @@ library(LearnBayes)
 
 # Abstract
 
+### Background
+Pfizer and BioNTech performed a large study in 2020 to verify their mRNA vaccine exceeds 30% efficacy in COVID prevention. We will verify the claims in this study by comparing the results of multiple statistical techniques.
+
+### Methods
+We will use three statistical methods to independently generate an estimate and 95% confidence interval for vaccine efficacy. First, we will employ Bayesian methods analyzing the posterior distribution from the prior used in the report and three additional priors ranging from completely uninformative to increasingly pessimistic. Second, we will use maximum likelihood estimation. Finally, we will use nonparametric bootstrapping. 
+
+### Results
+All methods agreed and generated an estimated vaccine efficacy of about 0.95. Additionally, each statistical method generated confidence intervals ranging from about 0.9 to 0.98. 
+
+### Conclusion
+All confidence intervals have lower bounds greater than 0.3. So, we reject the null for every statistical method used and conclude vaccine efficacy is greater than 0.3. We confirm the study's findings and conclude the vaccine is effective at preventing COVID.
+
 # Keywords
+COVID-19, Bayesian statistics, maximum likelihood estimation, bootstrap
 
 # Introduction
   COVID-19 emerged at the end of 2019 as a global threat to humanity. Hospitals were overwhelmed, economies shut down, and hundreds of thousands died from the virus in just the first few months of the pandemic. In 2020, COVID was the third leading cause of death in the United States with over 350,000 confirmed deaths due to COVID (https://www.cdc.gov/nchs/products/databriefs/db427.htm). The need for prevention tactics was obvious and utterly necessary to save lives and help slow down the extreme social and economic damage done by the virus. Very quickly, large biotechnology companies like Pfizer and BioNTech intended to test their vaccine candidates with the intent to prove vaccine efficacy is not 30%, since the FDA requires at least a  30% efficacy in new treatments, and obtain approval for an emergency use authorization. So, BioNTech and Pfizer performed a multinational, placebo-controlled, observer-blinded, pivotal efficacy trial randomly assigning those age 16 or older to either a vaccine or placebo group in a 1:1 ratio. Those in the vaccine group were given two doses of the mRNA vaccine 21 days apart and those in the placebo were given two doses of saline solution 21 days apart. Efficacy was primarily measured as the efficacy in preventing COVID rather than dealing with already confirmed, severe COVID cases. Thus, the data is measured on those who received both doses of either the placebo or mRNA vaccine without major protocol deviations (such that the population could not be evaluated, for example in those with HIV) who had no previous indication of infection within 7 days after the second dose. All acceptable candidates are expected to report and be tested for COVID infection at any time 7 days after the second dose of the vaccine. From this, efficacy can be estimated by comparing the rate of infection between the vaccine and placebo groups. 
