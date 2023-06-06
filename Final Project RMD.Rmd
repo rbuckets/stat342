@@ -108,69 +108,60 @@ Next, we will perform hypothesis testing using the likelihood ratio test using $
 
 ## Bayesian Results
 
-First, we'll examine our uninformative prior $Beta(0, 1) = Unif(0, 1)$. The median of our posterior distribution is $0.946707$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9009794, 0.9750466)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.9422e-28$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. In the figure below, we plot the prior and posterior distributions:
+The following table displays the median, the 95% confidence interval, and the $P(\psi < 0.3)$ (p-value) of the posterior distribution for each of the prior distributions we outlined in the Statistical Methods section:
 
-```{r Bayesian uniform figure, echo=FALSE, fig.width=5, fig.height=4}
+\begin{table}[h]
+\centering
+\caption{Table of Statistics of Posterior Distributions for Selected Beta Prior Distributions}
+\begin{tabular}{cccc} \hline
+Prior Distribution & Median & 95\% Confidence Interval & $P(\psi < 0.3)$ \\ \hline
+$Beta(1, 1)$ & $0.946707$ & $(0.9009794, 0.9750466)$ & $1.9422e-28$ \\ \hline
+$Beta(0.700102, 1)$ & $0.9485501$ & $(0.9035199, 0.9762552)$ & $1.9422e-28$ \\ \hline
+$Beta(43.04, 43.04)$ & $0.752294$ & $(0.4994181, 0.6944378)$ & $1.923758e-13$ \\ \hline
+$Beta(134.47, 89.76)$ & $0.752294$ & $(0.3068438, 0.5407399)$ & $0.01986187$ \\ \hline
+\end{tabular}
+\end{table}
 
-x <- seq(0, 1, length.out = 1000)
+Below, we plot the prior and posterior distributions for each of our four tested Beta prior distributions. Note that more informative prior distributions (in blue) have less spread, and thus are more highly concentrated around their centers.
 
-pdf_beta1 <- dbeta(x, 1, 1)
-pdf_beta2 <- dbeta(x, 8 + 1, 170 - 8 + 1)
-
-plot(x, pdf_beta1, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 25))
-lines(x, pdf_beta2, col = "red", lwd = 2)
-legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
-```
-
-Note that because our prior distribution is extremely uninformative, our posterior distribution is extremely precise and centered at a very low value of $\pi$, which results in a 95% confidence interval that only contains extremely high values of $\psi$. This is in concordance with our results from before.
-
-Now we will examine the prior distribution used by the study, which was $Beta(0.700102, 1)$. The median of our posterior distribution is $0.9485501$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9035199, 0.9762552)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.9422e-28$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. Our prior distribution is also extremely uninformative, so we expect extreme values in our confidence interval and our p-value. In the figure below, we plot the prior and posterior distributions:
-
-```{r Bayesian study figure, echo=FALSE, fig.width=5, fig.height=4}
+```{r Bayesian uniform figure, echo=FALSE, fig.width=8, fig.height=6}
 
 x <- seq(0, 1, length.out = 1000)
 
-pdf_beta1 <- dbeta(x, 0.700102, 1)
-pdf_beta2 <- dbeta(x, 8 + 0.700102, 170 - 8 + 1)
+# uniform
+pdf_beta1_unif <- dbeta(x, 1, 1)
+pdf_beta2_unif <- dbeta(x, 8 + 1, 170 - 8 + 1)
 
-plot(x, pdf_beta1, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 25))
-lines(x, pdf_beta2, col = "red", lwd = 2)
+par(mfrow = c(2, 2))
+
+plot(x, pdf_beta1_unif, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 25), main="Beta(1, 1)")
+lines(x, pdf_beta2_unif, col = "red", lwd = 2)
+legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
+
+# study
+pdf_beta1_study <- dbeta(x, 0.700102, 1)
+pdf_beta2_study <- dbeta(x, 8 + 0.700102, 170 - 8 + 1)
+
+plot(x, pdf_beta1_study, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 25), main="Beta(0.700102, 1)")
+lines(x, pdf_beta2_study, col = "red", lwd = 2)
+legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
+
+# med0
+pdf_beta1_med0 <- dbeta(x, 43.04, 43.04)
+pdf_beta2_med0 <- dbeta(x, 8 + 43.04, 170 - 8 + 43.04)
+
+plot(x, pdf_beta1_med0, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 20), main="Beta(43.04, 43.04)")
+lines(x, pdf_beta2_med0, col = "red", lwd = 2)
+legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
+
+# pessimistic
+pdf_beta1_pessimistic <- dbeta(x, 134.47, 89.76)
+pdf_beta2_pessimistic <- dbeta(x, 8 + 134.47, 170 - 8 + 89.76)
+
+plot(x, pdf_beta1_pessimistic, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 20), main="Beta(134.478, 89.76)")
+lines(x, pdf_beta2_pessimistic, col = "red", lwd = 2)
 legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
 ```
-
-Our graphs are very similar to the graphs for the uniform prior distribution. The only difference is a slight spike in the prior where $\pi = 0$. Because our distributions are so similar, we expect to obtain similar results for our significance test and confidence interval to the ones we obtained for the uniform prior. Indeed, our results our similar.
-
-Next, we will examine the informative and pessimistic prior distribution $Beta(43.04, 43.04)$. The median of our posterior distribution given our informative and pessimistic prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.923758e-13$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. Because our prior distribution is more pessimistic, our confidence interval and p-value are not as extreme as the ones we obtained for our previous uninformative priors. In the figure below, we plot the prior and posterior distributions:
-
-```{r Bayesian med0 figure, echo=FALSE, fig.width=5, fig.height=4}
-
-x <- seq(0, 1, length.out = 1000)
-
-pdf_beta1 <- dbeta(x, 43.04, 43.04)
-pdf_beta2 <- dbeta(x, 8 + 43.04, 170 - 8 + 43.04)
-
-plot(x, pdf_beta1, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 20))
-lines(x, pdf_beta2, col = "red", lwd = 2)
-legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
-```
-
-Note that because our prior distribution is more informative, our posterior distribution has more spread. Our posterior distribution is also centered on a higher value of $\pi$, which would be a lower value of $\psi$. This is in concordance with the confidence interval we calculated earlier, and it makes sense because our prior distribution is more pessimistic.
-
-Finally, we examine our most pessimistic model $Beta(134.47, 89.76)$, where we consider the possibility that $\psi$ can be negative. The median of our posterior distribution given this prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $0.01986187$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. This is the most striking result in our findings, as even when we consider a prior distribution with a mean of $\psi = -0.5$ and a $0.95$ quantile of $\psi = -0.2$, we still reject a null hypothesis of $\psi = 0.3$. Our analysis demonstrates just how the evidence in the study was. In the figure below, we plot the prior and posterior distributions:
-
-```{r Bayesian pessimistic figure, echo=FALSE, fig.width=5, fig.height=4}
-
-x <- seq(0, 1, length.out = 1000)
-
-pdf_beta1 <- dbeta(x, 134.47, 89.76)
-pdf_beta2 <- dbeta(x, 8 + 134.47, 170 - 8 + 89.76)
-
-plot(x, pdf_beta1, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = expression(pi), xlim = c(0, 1), ylim=c(0, 20))
-lines(x, pdf_beta2, col = "red", lwd = 2)
-legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
-```
-
-Our posterior distribution has more spread than our uniform and $Beta(0.700102, 1)$ prior distributions because our prior distribution $Beta(134.47, 89.76)$ is more informative than those distributions. Because our prior distribution is centered around a high value of $\pi$, our posterior distribution is also centered around high values of $\pi$, or lower values of $\psi$. Because of this, our efficacy confidence intervals and p-values are not as extreme as the other distributions.
 
 ## Bootstrapping Results
 The distribution of $\hat{\psi}$ from the 10,000 samples is displayed below. 
@@ -237,9 +228,9 @@ MLE Wald's & 0.915562 & 0.985673 \\ \hline
 The results of the Pfizer analysis agreed with our analysis. All methods employed estimated efficacy to be about 95%, which is also what Pfizer's estimated efficacy is as well. Additionally, all confidence intervals lined up with Pfizer's analysis, generating ranges from around 0.91 to 0.98. Since none of the confidence intervals contain 0.3, for each and every method used we reject the null hypothesis and conclude that the true efficacy is not 0.3. In addition to confidence intervals, we performed the likelihood ratio test which generated a p-value of $2.822313 * 10^{-28}$. Since this p-value is less than the specified 0.05 significance level, we conclude there is sufficient evidence against and reject the null hypothesis. Nonparametric bootstrapping is an effective tactic to model population data from a sample and generate two types of confidence intervals. However, nonparametric bootstrapping is at the mercy of the data. Inherent differences in the groups given the vaccine versus the placebo can lead to skewed data supporting a false conclusion. More analysis will need to be done on the subgroups within the data ensuring the groups are equal in participation from specific subgroups like race, obesity, age, and health status. The maximum likelihood estimation method generates a consistent estimator, giving us a reliable estimate and confidence interval for efficacy. Additionally, we can use the likelihood ratio test to determine how unusual our data is under the null hypothesis. However, the distribution for $T$, based on the distributions of $X$ and $Y$, are reliant on a few assumptions, including that every patient's COVID outcome is independent of all others and that the probability of contracting COVID is equivalent for each patient in the vaccine group and equal for each patient in the control group. However, since background factors may impact the probability of getting COVID, this is likely an untrue assumption. Nonetheless, all methods used generated an estimated efficacy of 95% with confidence intervals roughly ranging from 91% to 98%. Since each method independently rejected the null hypothesis, we agree with Pfizer and conclude that the true efficacy is not 30% but estimated to be 95%. So, the vaccine is a very effective treatment to prevent COVID-19.
 
 # References
-CDC COVID stats: https://www.cdc.gov/nchs/products/databriefs/db427.htm
-Pfizer COVID paper: https://www.nejm.org/doi/full/10.1056/nejmoa2034577
-Pfizer COVID paper protocol: https://shorturl.at/jrwT8
+CDC COVID stats: https://www.cdc.gov/nchs/products/databriefs/db427.htm \newline
+Pfizer COVID paper: https://www.nejm.org/doi/full/10.1056/nejmoa2034577 \newline
+Pfizer COVID paper protocol: https://shorturl.at/jrwT8 \newline
 
 # Appendix
 
@@ -249,8 +240,8 @@ Recall that $\pi_0$ represents the probability that a participant is vaccinated 
 
 \begin{align*}
 \pi_0 &= P(\text{vaccinated} | \text{covid}) \\
-&= \frac{P(\text{covid} | \text{vaccinated})}{P(covid)} \\
-&= \frac{P(\text{covid} | \text{vaccianted})}{P(\text{covid} | \text{vaccianted})P(vaccinated) + P(\text{covid} | \text{placebo})P(placebo)} \\
+&= \frac{P(\text{covid} | \text{vaccinated})}{P(\text{covid})} \\
+&= \frac{P(\text{covid} | \text{vaccianted})}{P(\text{covid} | \text{vaccianted})P(\text{vaccinated}) + P(\text{covid} | \text{placebo})P(\text{placebo})} \\
 &= \frac{\pi_1 (\frac{n_1}{n_1 + n_2})}{\pi_1 (\frac{n_1}{n_1 + n_2}) + \pi_2 (\frac{n_2}{n_1 + n_2})} \\
 &= \frac{n_1\pi_1}{n_1\pi_1 + n_2\pi_2}
 \end{align*}
@@ -391,7 +382,6 @@ cat("1-sided p-value: ", pbeta(q=0.4118, shape1=134.47 + 8, shape2=89.76 + 170 -
 
 cat("95% CI:", c(low_med0, high_med0))
 ```
-
 
 ## Code Chunk 3: Bootstrapping
 ```{r bootstrapping, eval=FALSE}
