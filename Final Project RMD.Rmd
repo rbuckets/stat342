@@ -73,7 +73,7 @@ This section details our Bayesian analysis methods including methods of choosing
 The uninformative prior, which is a beta distribution with $\alpha = \beta = 1$, allows for massive uncertainty in our potential values for $\pi_0$ with a 95% confidence interval ranging from 0.025 to 0.0975. This corresponds to potential efficacy values ranging from -28 to 0.974359 with 95% confidence. This makes sense in the context of our problem since the way efficacy is defined in our scope, it can take possible values from $-\infty$ (when $\pi_1$ is 1 and $\pi_2$ is 0) to 1 (when $\pi_2$ is 1 and $\pi_1$ is 0). Additionally, the median of this uninformative prior is $\pi_0 = 0.5$, which corresponds to an efficacy of 0. Thus, the uninformative prior has a median efficacy of 0 with potential values ranging from -28 to 0.974359 with 95% confidence where each efficacy value has equal probability of occurring. 
 
 ### Prior 2: Centered About Null (Referenced Paper)
-The second prior distribution we will analyze is the same one used in the referenced paper. The team of scientists decided to use a Beta prior distribution with $\alpha = 0.700102$ and $\beta = 1$.\footnote{Pfizer paper supplementary protocol: https://shorturl.at/jrwT8} Note the expected value of this distribution is $\pi_0 = 0.4118$. Plugging in $\psi = \frac{1 - 2\pi_0}{1-\pi_0}$ yields $\psi=0.3$. Thus, the prior distribution used in the referenced paper is centered about the efficacy value under the null hypothesis. This distribution has a 95% confidence interval for $\pi_0$ ranging from 0.005148 to 0.964483, which is a very similar sized interval for $\pi_0$ as the uninformative prior and thus a fairly uninformative prior distribution, with a corresponding efficacy interval ranging from -26.155565 to 0.994825. So, the prior distribution used in the paper is centered about an efficacy of 0.3, which is the efficacy under the null, and is a fairly uninformative distribution.  
+The second prior distribution we will analyze is the same one used in the referenced paper. The team of scientists decided to use a Beta prior distribution with $\alpha = 0.700102$ and $\beta = 1$.\footnote{Pfizer paper protocol: https://shorturl.at/jrwT8} Note the expected value of this distribution is $\pi_0 = 0.4118$. Plugging in $\psi = \frac{1 - 2\pi_0}{1-\pi_0}$ yields $\psi=0.3$. Thus, the prior distribution used in the referenced paper is centered about the efficacy value under the null hypothesis. This distribution has a 95% confidence interval for $\pi_0$ ranging from 0.005148 to 0.964483, which is a very similar sized interval for $\pi_0$ as the uninformative prior and thus a fairly uninformative prior distribution, with a corresponding efficacy interval ranging from -26.155565 to 0.994825. So, the prior distribution used in the paper is centered about an efficacy of 0.3, which is the efficacy under the null, and is a fairly uninformative distribution.  
 
 ### Prior 3: Pessimistic, Informative
 
@@ -240,6 +240,8 @@ The results of the Pfizer analysis agreed with our analysis. All methods employe
 
 # References
 CDC COVID stats: https://www.cdc.gov/nchs/products/databriefs/db427.htm
+Pfizer COVID paper: https://www.nejm.org/doi/full/10.1056/nejmoa2034577
+Pfizer COVID paper protocol: https://shorturl.at/jrwT8
 
 # Appendix
 
