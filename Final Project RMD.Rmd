@@ -9,7 +9,7 @@ header-includes: \usepackage{setspace}\doublespacing
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(LearnBayes)
+library(LearnBayes) 
 ```
 
 # Abstract
