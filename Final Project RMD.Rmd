@@ -128,27 +128,7 @@ Next, we will perform hypothesis testing using the likelihood ratio test using $
 
 ## Bayesian Results
 
-```{r efficacy, echo=FALSE}
-# converts from pi values to efficacy values (psi)
-efficacy <- function(pi) {
-  return ((1 - 2*pi) / (1 - pi))
-}
-```
-
-```{r Bayesian uniform, eval=FALSE}
-# calculate posterior median
-posterior_median_pi <- qbeta(0.5, shape1 = 1 + 8, shape2 = 1 + 170 - 8)
-cat("posterior median:", efficacy(posterior_median_pi), "\n")
-
-# calculate 95% CI
-pi_ci_unif <- qbeta(p = c(0.025, 0.975), shape1 = 1 + 8, shape2 = 170 - 8 + 1)
-low_unif <- efficacy(pi_ci_unif[2])
-high_unif <- efficacy(pi_ci_unif[1])
-
-cat("95% CI:", c(low_unif, high_unif))
-```
-
-First, we'll examine our uninformative prior $Beta(0, 1) = Unif(0, 1)$. The median of our posterior distribution is $0.946707$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9009794, 0.9750466)$, which rejects the null hypothesis. In the figure below, we plot the prior and posterior distributions:
+First, we'll examine our uninformative prior $Beta(0, 1) = Unif(0, 1)$. The median of our posterior distribution is $0.946707$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9009794, 0.9750466)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.9422e-28$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. In the figure below, we plot the prior and posterior distributions:
 
 ```{r Bayesian uniform figure, echo=FALSE}
 
@@ -161,22 +141,10 @@ plot(x, pdf_beta1, type = "l", col = "blue", lwd = 2, ylab = "Density", xlab = e
 lines(x, pdf_beta2, col = "red", lwd = 2)
 legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
 ```
+
 Note that because our prior distribution is extremely uninformative, our posterior distribution is extremely precise and centered at a very low value of $\pi$, which results in a 95% confidence interval that only contains extremely high values of $\psi$. This is in concordance with our results from before.
 
-```{r Bayesian study}
-# calculate posterior median
-posterior_median_pi <- qbeta(0.5, shape1 = 0.700102 + 8, shape2 = 1 + 170 - 8)
-cat("posterior median:", efficacy(posterior_median_pi), "\n")
-
-# calculate 95% CI
-pi_ci_study <- qbeta(p = c(0.025, 0.975), shape1 = 0.700102 + 8, shape2 = 170 - 8 + 1)
-low_study <- efficacy(pi_ci_study[2])
-high_study <- efficacy(pi_ci_study[1])
-
-cat("95% CI:", c(low_study, high_study))
-```
-
-Now we will examine the prior distribution used by the study, which was $Beta(0.700102, 1)$. The median of our posterior distribution is $0.9485501$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9035199, 0.9762552)$, which rejects the null hypothesis. This distribution is also extremely uninformative, so we expect extreme values in our confidence interval. In the figure below, we plot the prior and posterior distributions:
+Now we will examine the prior distribution used by the study, which was $Beta(0.700102, 1)$. The median of our posterior distribution is $0.9485501$, while the 95% confidence interval for the posterior distribution corresponding with this prior is $(0.9035199, 0.9762552)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.9422e-28$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. Our prior distribution is also extremely uninformative, so we expect extreme values in our confidence interval and our p-value. In the figure below, we plot the prior and posterior distributions:
 
 ```{r Bayesian study figure, echo=FALSE}
 
@@ -190,24 +158,11 @@ lines(x, pdf_beta2, col = "red", lwd = 2)
 legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
 ```
 
-Our graphs are very similar to the graphs for the uniform prior distribution. The only difference is a slight spike in the prior where $\pi = 0$. Because our distributions are so similar, we expect to obtain similar results for our significance tests and confidence intervals to the ones we obtained for the uniform prior. Indeed, our results our similar.
+Our graphs are very similar to the graphs for the uniform prior distribution. The only difference is a slight spike in the prior where $\pi = 0$. Because our distributions are so similar, we expect to obtain similar results for our significance test and confidence interval to the ones we obtained for the uniform prior. Indeed, our results our similar.
 
-```{r Bayesian med0, echo=FALSE}
-# calculate posterior median
-posterior_median_pi <- qbeta(0.5, shape1 = 43.04 + 8, shape2 = 43.04 + 170 - 8)
-cat("posterior median:", efficacy(posterior_median_pi), "\n")
+Next, we will examine the informative and pessimistic prior distribution $Beta(43.04, 43.04)$. The median of our posterior distribution given our informative and pessimistic prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $1.923758e-13$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. Because our prior distribution is more pessimistic, our confidence interval and p-value are not as extreme as the ones we obtained for our previous uninformative priors. In the figure below, we plot the prior and posterior distributions:
 
-# calculate 95% CI
-pi_ci_med0 <- qbeta(p = c(0.025, 0.975), shape1 = 43.04 + 8, shape2 = 43.04 + 170 - 8)
-low_med0 <- efficacy(pi_ci_med0[2])
-high_med0 <- efficacy(pi_ci_med0[1])
-
-cat("95% CI:", c(low_med0, high_med0))
-```
-
-Next, we will examine the informative and pessimistic prior distribution $Beta(43.04, 43.04)$. The median of our posterior distribution given our informative and pessimistic prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. Because our prior distribution is more pessimistic, our confidence interval is not as extreme as the uninformative prior, but it still rejects our null hypothesis. In the figure below, we plot the prior and posterior distributions:
-
-```{r Bayesian pessimistic figure, echo=FALSE}
+```{r Bayesian med0 figure, echo=FALSE}
 
 x <- seq(0, 1, length.out = 1000)
 
@@ -221,21 +176,7 @@ legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd
 
 Note that because our prior distribution is more informative, our posterior distribution has more spread. Our posterior distribution is also centered on a higher value of $\pi$, which would be a lower value of $\psi$. This is in concordance with the confidence interval we calculated earlier, and it makes sense because our prior distribution is more pessimistic.
 
-```{r Bayesian med0, echo=FALSE}
-# calculate posterior median
-posterior_median_pi <- qbeta(0.5, shape1 = 134.47 + 8, shape2 = 89.76 + 170 - 8)
-cat("posterior median:", efficacy(posterior_median_pi), "\n")
-
-# calculate 95% CI
-pi_ci_med0 <- qbeta(p = c(0.025, 0.975), shape1 = 134.47 + 8, shape2 = 89.76 + 170 - 8)
-low_med0 <- efficacy(pi_ci_med0[2])
-high_med0 <- efficacy(pi_ci_med0[1])
-
-
-cat("95% CI:", c(low_med0, high_med0))
-```
-
-Finally, we examine our most pessimistic model $Beta(134.47, 89.76)$, where we consider the possibility that $\psi$ can be negative. The median of our posterior distribution given this prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. This is the most striking result in our findings, as even when we consider a prior distribution with a mean of $\psi = -0.5$ and a $0.95$ quantile of $\psi = -0.2$, we still reject a null hypothesis of $\psi = 0.3$. Our analysis demonstrates just how the evidence in the study was. In the figure below, we plot the prior and posterior distributions:
+Finally, we examine our most pessimistic model $Beta(134.47, 89.76)$, where we consider the possibility that $\psi$ can be negative. The median of our posterior distribution given this prior is $0.752294$, while the 95% confidence interval is $(0.4994181, 0.6944378)$, which rejects the null hypothesis. The $P(\psi < 0.3)$ given our posterior distribution is $0.01986187$, so our one-sided p-value rejects the null hypothesis and determines that the true efficacy is greater than $0.3$. This is the most striking result in our findings, as even when we consider a prior distribution with a mean of $\psi = -0.5$ and a $0.95$ quantile of $\psi = -0.2$, we still reject a null hypothesis of $\psi = 0.3$. Our analysis demonstrates just how the evidence in the study was. In the figure below, we plot the prior and posterior distributions:
 
 ```{r Bayesian pessimistic figure, echo=FALSE}
 
@@ -249,7 +190,7 @@ lines(x, pdf_beta2, col = "red", lwd = 2)
 legend("topright", legend = c("Prior", "Posterior"), col = c("blue", "red"), lwd = 2)
 ```
 
-Our posterior distribution has more spread than our uniform and $Beta(0.700102, 1)$ prior distributions because our prior distribution $\Beta(134.47, 89.76)$ is more informative than those distributions. Because our prior distribution is centered around a high value of $\pi$, our posterior distribution is also centered around high values of $\pi$, or lower values of $\psi$. Because of this, our efficacy confidence intervals and test statistics are not as extreme as the other distributions.
+Our posterior distribution has more spread than our uniform and $Beta(0.700102, 1)$ prior distributions because our prior distribution $\Beta(134.47, 89.76)$ is more informative than those distributions. Because our prior distribution is centered around a high value of $\pi$, our posterior distribution is also centered around high values of $\pi$, or lower values of $\psi$. Because of this, our efficacy confidence intervals and p-values are not as extreme as the other distributions.
 
 ## Bootstrapping Results
 The distribution of $\hat{\psi}$ from the 10,000 samples is displayed below. 
@@ -364,8 +305,81 @@ beta.select(quantile1 = list(p=0.05, x=0.4118),
             quantile2 = list(p=0.5, x=0.5))
 ```
 
+## Code Chunk 2: Bayesian Calculations
+```{r efficacy, eval=FALSE}
+# converts from pi values to efficacy values (psi)
+efficacy <- function(pi) {
+  return ((1 - 2*pi) / (1 - pi))
+}
+```
 
-## Code Chunk 2: Bootstrapping
+```{r Bayesian uniform, eval=FALSE}
+# calculate posterior median
+posterior_median_pi <- qbeta(0.5, shape1 = 1 + 8, shape2 = 1 + 170 - 8)
+cat("posterior median:", efficacy(posterior_median_pi), "\n")
+
+# calculate 95% CI
+pi_ci_unif <- qbeta(p = c(0.025, 0.975), shape1 = 1 + 8, shape2 = 170 - 8 + 1)
+low_unif <- efficacy(pi_ci_unif[2])
+high_unif <- efficacy(pi_ci_unif[1])
+
+# calculate 1-sided p-value
+cat("1-sided p-value: ", pbeta(q=0.4118, shape1=1 + 8, shape2=1 + 170 - 8, lower.tail=FALSE), "\n")
+
+cat("95% CI:", c(low_unif, high_unif))
+```
+
+```{r Bayesian study, eval=FALSE}
+# calculate posterior median
+posterior_median_pi <- qbeta(0.5, shape1 = 0.700102 + 8, shape2 = 1 + 170 - 8)
+cat("posterior median:", efficacy(posterior_median_pi), "\n")
+
+# calculate 95% CI
+pi_ci_study <- qbeta(p = c(0.025, 0.975), shape1 = 0.700102 + 8, shape2 = 170 - 8 + 1)
+low_study <- efficacy(pi_ci_study[2])
+high_study <- efficacy(pi_ci_study[1])
+
+# calculate 1-sided p-value
+cat("1-sided p-value: ", pbeta(q=0.4118, shape1=0.700102 + 8, shape2=1 + 170 - 8, lower.tail=FALSE), "\n")
+
+cat("95% CI:", c(low_study, high_study))
+```
+
+```{r Bayesian med0, eval=FALSE}
+# calculate posterior median
+posterior_median_pi <- qbeta(0.5, shape1 = 43.04 + 8, shape2 = 43.04 + 170 - 8)
+cat("posterior median:", efficacy(posterior_median_pi), "\n")
+
+# calculate 95% CI
+pi_ci_med0 <- qbeta(p = c(0.025, 0.975), shape1 = 43.04 + 8, shape2 = 43.04 + 170 - 8)
+low_med0 <- efficacy(pi_ci_med0[2])
+high_med0 <- efficacy(pi_ci_med0[1])
+
+# calculate 1-sided p-value
+cat("1-sided p-value: ", pbeta(q=0.4118, shape1=43.04 + 8, shape2=43.04 + 170 - 8, lower.tail=FALSE), "\n")
+
+cat("95% CI:", c(low_med0, high_med0))
+```
+
+```{r Bayesian pessimistic, eval=FALSE}
+# calculate posterior median
+posterior_median_pi <- qbeta(0.5, shape1 = 134.47 + 8, shape2 = 89.76 + 170 - 8)
+cat("posterior median:", efficacy(posterior_median_pi), "\n")
+
+# calculate 95% CI
+pi_ci_med0 <- qbeta(p = c(0.025, 0.975), shape1 = 134.47 + 8, shape2 = 89.76 + 170 - 8)
+low_med0 <- efficacy(pi_ci_med0[2])
+high_med0 <- efficacy(pi_ci_med0[1])
+
+# calculate 1-sided p-value
+cat("1-sided p-value: ", pbeta(q=0.4118, shape1=134.47 + 8, shape2=89.76 + 170 - 8, lower.tail=FALSE), "\n")
+
+
+cat("95% CI:", c(low_med0, high_med0))
+```
+
+
+## Code Chunk 3: Bootstrapping
 ```{r bootstrapping, eval=FALSE}
 set.seed(1130)
 x_pop <- c(rep(1, 8), rep(0, 17403))
